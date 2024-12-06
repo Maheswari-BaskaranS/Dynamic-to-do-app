@@ -7,6 +7,14 @@ export interface Task {
   dueDate: string;
   completed: boolean;
 }
+export type TaskCategory = "Pending" | "In Progress" | "Completed";
+
+interface ReorderTaskPayload {
+  sourceCategory: TaskCategory;
+  destinationCategory: TaskCategory;
+  sourceIndex: number;
+  destinationIndex: number;
+}
 
 interface TasksState {
   tasks: Task[];
@@ -34,6 +42,9 @@ const taskSlice = createSlice({
         state.tasks[index] = action.payload;
       }
     },
+    updateTasks: (state, action: PayloadAction<Task[]>) => {
+      state.tasks = action.payload; // Update the tasks in the state with the new tasks array
+    },
     deleteTask: (state, action: PayloadAction<string>) => {
       state.tasks = state.tasks.filter((task) => task.id !== action.payload);
       state.filteredTasks = state.filteredTasks.filter((task) => task.id !== action.payload);
@@ -45,21 +56,40 @@ const taskSlice = createSlice({
       );
       
     },
-    reorderTasks(state, action: PayloadAction<{ category: string; sourceIndex: number; destinationIndex: number }>) {
-      const { category, sourceIndex, destinationIndex } = action.payload;
-      const tasksInCategory = state.tasks.filter((task) => task.category === category);
-      const [removed] = tasksInCategory.splice(sourceIndex, 1);
-      tasksInCategory.splice(destinationIndex, 0, removed);
-      
-      // Update the tasks with the new order
-      state.tasks = [
-        ...state.tasks.filter((task) => task.category !== category),
-        ...tasksInCategory,
-      ];
-    },
+    reorderTasks(state, action: PayloadAction<ReorderTaskPayload>) {
+      const { sourceCategory, destinationCategory, sourceIndex, destinationIndex } = action.payload;
+    
+      // Filter tasks by category
+      const sourceTasks = state.tasks.filter((task) => task.category === sourceCategory);
+      const destinationTasks = state.tasks.filter((task) => task.category === destinationCategory);
+    
+      // Remove the task from the source category
+      const [movedTask] = sourceTasks.splice(sourceIndex, 1);
+      movedTask.category = destinationCategory; // Now safe because we know destinationCategory is a valid category
+    
+      // Insert the task into the destination category
+      destinationTasks.splice(destinationIndex, 0, movedTask);
+    
+      // Update the tasks array to reflect the new order
+      const updatedTasks = state.tasks
+        .filter((task) => task.category !== sourceCategory && task.category !== destinationCategory) // Exclude the categories from the old lists
+        .concat(sourceTasks) // Add the updated source tasks
+        .concat(destinationTasks); // Add the updated destination tasks
+    
+      // Update the tasks in the store
+      state.tasks = updatedTasks;
+    
+      // Optionally, update filteredTasks if needed
+      if (state.filterText) {
+        state.filteredTasks = state.tasks.filter((task) =>
+          task.title.toLowerCase().includes(state.filterText.toLowerCase())
+        );
+      }
+    }
+    
   
   },
 });
 
-export const { addTask, updateTask, deleteTask, setFilterText,reorderTasks } = taskSlice.actions;
+export const { addTask, updateTask,updateTasks, deleteTask, setFilterText,reorderTasks } = taskSlice.actions;
 export default taskSlice.reducer;
