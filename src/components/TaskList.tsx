@@ -13,7 +13,7 @@ interface TaskListProps {
 const TaskList: React.FC<TaskListProps> = ({ title, tasks, onEditTask, onDeleteTask }) => {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3> {/* Display the title */}
+      <h3 className="text-lg font-semibold mb-2">{title}</h3> 
       <ul className="space-y-4">
         {tasks.map((task, index) => (
             <Draggable key={task.id} draggableId={task.id} index={index}>

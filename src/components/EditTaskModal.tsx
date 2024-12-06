@@ -5,7 +5,7 @@ import { updateTask, Task } from "../features/tasks/taskSlice";
 interface EditTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  task: Task | null; // Task to be edited (can be null initially)
+  task: Task | null;
 }
 
 const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, task }) => {
@@ -15,7 +15,6 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, task }) 
   const [category, setCategory] = useState<"Pending" | "In Progress" | "Completed">("Pending");
   const [dueDate, setDueDate] = useState("");
 
-  // Update state when the task prop changes
   useEffect(() => {
     if (task) {
       setTitle(task.title);
@@ -26,23 +25,23 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, task }) 
 
   const handleSubmit = () => {
     if (title.trim() && dueDate.trim()) {
-      // Dispatch the updateTask action
+
       dispatch(
         updateTask({
-          id: task!.id, // Ensure task is not null using `!`
+          id: task!.id,
           title,
           category,
           dueDate,
-          completed: task!.completed, // Preserve the current completed status
+          completed: task!.completed,
         })
       );
-      onClose(); // Close the modal after submission
+      onClose();
     } else {
       alert("Please fill in all fields.");
     }
   };
 
-  if (!isOpen || !task) return null; // Don't render if modal is closed or task is null
+  if (!isOpen || !task) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

@@ -1,4 +1,3 @@
-// src/utils/localStorage.ts
 export const setItem = (key: string, value: any): void => {
     localStorage.setItem(key, JSON.stringify(value));
   };

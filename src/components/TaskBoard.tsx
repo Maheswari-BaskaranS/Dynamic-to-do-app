@@ -50,14 +50,23 @@ const TaskBoard = () => {
     const destinationTasks = [...tasks.filter((task) => task.category === destinationCategory)];
 
     const [movedTask] = sourceTasks.splice(source.index, 1);
+    movedTask.category = destinationCategory; 
 
-    const updatedTask = { ...movedTask, category: destinationCategory };
-    destinationTasks.splice(destination.index, 0, updatedTask);
+  destinationTasks.splice(destination.index, 0, movedTask);
 
     const updatedTasks = tasks.map((task) => {
       if (task.id === movedTask.id) {
-        return updatedTask;
+        return movedTask;
       }
+
+      if (sourceCategory === task.category) {
+        return { ...task, category: sourceCategory };
+      }
+
+      if (destinationCategory === task.category) {
+        return { ...task, category: destinationCategory };
+      }
+
       return task;
     });
 
@@ -98,7 +107,7 @@ const TaskBoard = () => {
                     <TaskList
                       key={category}
                       title={category}
-                      tasks={groupedTasks[category as keyof typeof groupedTasks]} // Explicitly tell TypeScript the key is valid
+                      tasks={groupedTasks[category as keyof typeof groupedTasks]}
                       onEditTask={handleEditTask}
                       onDeleteTask={handleDeleteTask}
                     />

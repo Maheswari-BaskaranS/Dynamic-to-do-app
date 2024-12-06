@@ -23,13 +23,12 @@ const TaskPieChart: React.FC<TaskPieChartProps> = ({ tasks }) => {
     }
   );
 
-  // Data for the chart
   const data = {
     labels: ["Pending", "In Progress", "Completed"],
     datasets: [
       {
         data: [categoryCounts.Pending, categoryCounts["In Progress"], categoryCounts.Completed],
-        backgroundColor: ["#FBBF24", "#3B82F6", "#10B981"], // Colors for each slice
+        backgroundColor: ["#FBBF24", "#3B82F6", "#10B981"], 
         hoverBackgroundColor: ["#FACC15", "#2563EB", "#059669"],
         borderWidth: 1,
       },
